@@ -11,10 +11,10 @@ from datetime import timedelta
 #--------------------修改相应数据--------------------------
 # 修改相应用户名
 _username = "xx"
-# Fiddler抓包获取
+
 cookies = {
-	'auth':'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-	'uid':'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+	'auth':'xxxxxx',
+	'uid':'xxxxxx',
 	'web_language':'en-us',
 	'api_access_token':'qu8aBYUKRZenKNKooMzHtkg8qrIhUzYrebsXyfwzoETp9VadbojRts8cEBBzeQo_5a5ffab68679f47d2955ae13',
  
@@ -24,8 +24,8 @@ cookies = {
 
 _error_repeat =  "" + _username + "已有的预约，与当前预约时间有重叠"
 
-# 日志文件
-_log_file = open("log.txt","a")
+# 日志文件 crontab需要书写绝对路径
+_log_file = open("/home/alipond/workspaces/pyPro/library/log.txt","a")
 
 # 开始时间,只能设置为整数
 # 时:分:秒
@@ -35,8 +35,6 @@ _begin_time = "9:00:00"
 # 此处以小时为单位
 # 若更改开始时间，并且还需要预约到晚上十点需要对应更改_duration 
 _duration = 13
-
-
 
 
 
@@ -65,6 +63,13 @@ datas = {
 
 
 def ReserveSeat():
+	set_time = (int)(datas['beginTime'])
+	now = time.time()
+	if set_time <= now:
+		_log_file.write("[-]设定开始时间出错\n")
+		# 设定时间小于当前时间，则跳过当天的预定
+		return 
+	
 	r = requests.post(request_url, data=datas, headers=header, cookies = cookies,verify=False)
 	# 暂存座位号
 	seat = datas['seats[0]']
@@ -98,17 +103,17 @@ def GetNextDay():
 def SetBeginTime(set_time):
 
 	# 服务器需要整型数据
+	
 	begin_time = (str)((int)(time.mktime(time.strptime(set_time,"%Y-%m-%d %H:%M:%S"))))
 	datas['beginTime'] = begin_time
 	print(datas['beginTime'])
 	
 def main():
-
+	
 	SetDuration()
-	# 预约第二天
+	# 预约第一天
 	# 获取当前时间
 	set_time = time.strftime("%Y-%m-%d " + _begin_time, time.localtime()) 
-	print(set_time)
 	SetBeginTime(set_time)
 	ReserveSeat()
 	
@@ -120,20 +125,3 @@ def main():
 if __name__ == '__main__':
 	main()
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
