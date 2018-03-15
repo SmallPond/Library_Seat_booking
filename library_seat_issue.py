@@ -25,7 +25,7 @@ cookies = {
 _error_repeat =  "" + _username + "已有的预约，与当前预约时间有重叠"
 
 # 日志文件 crontab需要书写绝对路径
-_log_file = open("/home/alipond/workspaces/pyPro/library/log.txt","a")
+_log_file = open("/home/alipond/workspaces/pyPro/library/log.txt","w+")
 
 # 开始时间,只能设置为整数
 # 时:分:秒
@@ -65,8 +65,9 @@ datas = {
 def ReserveSeat():
 	set_time = (int)(datas['beginTime'])
 	now = time.time()
+	
 	if set_time <= now:
-		_log_file.write("[-]设定开始时间出错\n")
+		_log_file.write("[-] {0}设定开始时间出错\n".format(time.strftime("%Y-%m-%d ", time.localtime())))
 		# 设定时间小于当前时间，则跳过当天的预定
 		return 
 	
@@ -76,13 +77,13 @@ def ReserveSeat():
 	
 	while r.json()['DATA']['result'] != 'success':
 		if r.json()['DATA']['msg'] == _error_repeat:
-			_log_file.write("已有的预约，与当前预约时间有重叠\n")
-			break;
+			_log_file.write("{0}已有的预约，与当前预约时间有重叠\n".format(time.strftime("%Y-%m-%d ", time.localtime())))
+			break
 			
 		_log_file.write("{0} : 预约座位{1}失败哦，换一个座位再试试".format(time.strftime("%Y-%m-%d 9:00:00", time.localtime()), seat))
 		datas['seats[0]'] = (str)((int)(datas['seats[0]']) - 1)
 		
-	print(r.json())	
+	# print(r.json())	
 	# 恢复之前的座位号
 	datas['seats[0]'] = seat
 	
@@ -124,4 +125,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-	
