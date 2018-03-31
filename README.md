@@ -2,10 +2,11 @@
 
 > author:db
 
-> data  : 2018.3.14
+> data  : 2018.3.14   3.31
 
-> verson: v0.1
+> version: v0.1        v0.3
 
+> v0.3 进一步完善了预约逻辑问题
 
 ## 一、依赖库
 -	requests
